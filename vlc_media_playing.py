@@ -9,7 +9,7 @@ def play_video_vlc(video_path: str, audio_only: bool = False):
     # hide the vlc window if audio_only is True
     if audio_only:
         vlc_player.add_option('--aout=opensles')
-    asyncio.create_task(player_play(vlc_player))
+    asyncio.create_task(player_play(vlc_player))  # TODO: crashes after one song is played
     if input('Press enter to exit') == '':
         vlc_player.stop()
 

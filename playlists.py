@@ -1,9 +1,8 @@
 import json
 import os
-import vlc_media_playing as vlc_player
 
 
-class Playlists:
+class Playlist:
     def __init__(self, name, playlists_folder):
         self.name = name
         self.file_path = os.path.join(playlists_folder, name) + '.json'
@@ -30,6 +29,5 @@ class Playlists:
         del self.playlist['songs'][video_name]
         self.save_playlists()
 
-    def play_playlist(self):
-        for video_path in self.playlist['songs'].values():
-            vlc_player.play_video_vlc(video_path)
+    def get_videos(self) -> list[str]:
+        return self.playlist['songs']

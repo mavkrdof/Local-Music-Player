@@ -4,12 +4,17 @@ import os
 import yt_dlp
 import vlc_media_playing as vlc_player
 import playlists
+import multiprocessing as m_processing
 
 
 class Local_Music_Player:
-    def __init__(self, video_folder: str, playlist_folder: str):
+    def __init__(self, video_folder: str, playlist_folder: str, config_path: str) -> None:
         self.video_folder = video_folder
         self.playlist_folder = playlist_folder
+        self.vlc_player = vlc_player.Vlc_media_player(
+            video_list=[],
+            config_path=config_path
+        )
 
     def download_and_play_on_cmd(self, query: str | None = None) -> str:
         if query is None:
@@ -32,8 +37,7 @@ class Local_Music_Player:
             video_name = input('Enter video name: ')
             video_path = os.path.join(self.video_folder, video_name + '.mp4')
             plist.add_video(video_path, video_name=video_name)
-        if input('Play playlist? (y/n) ').lower() == 'y':
-            plist.play_playlist()
+        return plist
 
     def init_youtube(self, ):
         load_dotenv()
@@ -88,17 +92,40 @@ class Local_Music_Player:
         return file_path
 
     def create_playlist(self, name: str):
-        plist = playlists.Playlists(name, self.playlist_folder)
+        plist = playlists.Playlist(name, self.playlist_folder)
         plist.save_playlists()
         return plist
 
+    def play_playlist(self, plist: playlists.Playlist, clear_queue=True):
+        videos = plist.get_videos()
+        if clear_queue:
+            self.vlc_player.clear_queue()
+        self.vlc_player.add_videos(videos)
 
-if __name__ == '__main__':
+
+def run_cmd():
     video_folder = input(
         'Enter video folder path (C:\\Users\\USERFOLDER\\Downloads): '
         )
     playlists_folder = input(
         'Enter playlist folder path (C:\\Users\\USERFOLDER\\Playlists): '
-    )
-    lmp = Local_Music_Player(video_folder, playlists_folder)
-    lmp.create_playlist_on_cmd()
+        )
+    config_path = input(
+        'Enter config path (C:\\Users\\USERFOLDER\\config.json): '
+        )
+    lmp = Local_Music_Player(video_folder, playlists_folder, config_path)
+    plist = lmp.create_playlist_on_cmd()
+    lmp.play_playlist(plist)
+    lmp.vlc_player.open_media_player()
+    # print('starting media player')
+    # process_1 = m_processing.Process(target=lmp.vlc_player.open_media_player, args=(False,))
+    # process_1.start()
+    # print('starting cmd')
+    # prosess_2 = m_processing.Process(target=lmp.create_playlist_on_cmd, args=())
+    # prosess_2.start()
+    # process_1.join()
+    # prosess_2.join()
+
+
+if __name__ == '__main__':
+    run_cmd()

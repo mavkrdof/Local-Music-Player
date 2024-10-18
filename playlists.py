@@ -30,4 +30,4 @@ class Playlist:
         self.save_playlists()
 
     def get_videos(self) -> list[str]:
-        return self.playlist['songs']
+        return list(self.playlist['songs'].values())

@@ -4,7 +4,6 @@ import os
 import yt_dlp
 import vlc_media_playing as vlc_player
 import playlists
-import multiprocessing as m_processing
 
 
 class Local_Music_Player:
@@ -12,7 +11,6 @@ class Local_Music_Player:
         self.video_folder = video_folder
         self.playlist_folder = playlist_folder
         self.vlc_player = vlc_player.Vlc_media_player(
-            video_list=[],
             config_path=config_path
         )
 
